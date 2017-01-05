@@ -12,50 +12,81 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
 """Tests for TensorForestTrainer."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
+
+# TODO: #6568 Remove this hack that makes dlopen() not crash.
+if hasattr(sys, "getdlopenflags") and hasattr(sys, "setdlopenflags"):
+  import ctypes
+  sys.setdlopenflags(sys.getdlopenflags() | ctypes.RTLD_GLOBAL)
+
 import numpy as np
-import tensorflow as tf
+
+from tensorflow.contrib.learn.python.learn.datasets import base
+from tensorflow.contrib.learn.python.learn.estimators import random_forest
+from tensorflow.contrib.tensor_forest.python import tensor_forest
+from tensorflow.python.platform import test
 
 
-class TensorForestTrainerTests(tf.test.TestCase):
+class TensorForestTrainerTests(test.TestCase):
 
   def testClassification(self):
     """Tests multi-class classification using matrix data as input."""
-    hparams = tf.contrib.tensor_forest.python.tensor_forest.ForestHParams(
-        num_trees=3, max_nodes=1000, num_classes=3, num_features=4)
-    classifier = tf.contrib.learn.TensorForestEstimator(hparams)
+    hparams = tensor_forest.ForestHParams(
+        num_trees=3,
+        max_nodes=1000,
+        num_classes=3,
+        num_features=4,
+        split_after_samples=20)
+    classifier = random_forest.TensorForestEstimator(hparams.fill())
 
-    iris = tf.contrib.learn.datasets.load_iris()
+    iris = base.load_iris()
     data = iris.data.astype(np.float32)
-    target = iris.target.astype(np.float32)
+    labels = iris.target.astype(np.float32)
 
-    monitors = [tf.contrib.learn.TensorForestLossMonitor(10, 10)]
-    classifier.fit(x=data, y=target, steps=100, monitors=monitors)
-    classifier.evaluate(x=data, y=target, steps=10)
+    classifier.fit(x=data, y=labels, steps=100, batch_size=50)
+    classifier.evaluate(x=data, y=labels, steps=10)
+
+  def testClassificationTrainingLoss(self):
+    """Tests multi-class classification using matrix data as input."""
+    hparams = tensor_forest.ForestHParams(
+        num_trees=3, max_nodes=1000, num_classes=3, num_features=4)
+    classifier = random_forest.TensorForestEstimator(
+        hparams, graph_builder_class=(tensor_forest.TrainingLossForest))
+
+    iris = base.load_iris()
+    data = iris.data.astype(np.float32)
+    labels = iris.target.astype(np.float32)
+
+    monitors = [random_forest.TensorForestLossHook(10)]
+    classifier.fit(x=data, y=labels, steps=100, monitors=monitors)
+    classifier.evaluate(x=data, y=labels, steps=10)
 
   def testRegression(self):
     """Tests multi-class classification using matrix data as input."""
 
-    hparams = tf.contrib.tensor_forest.python.tensor_forest.ForestHParams(
-        num_trees=3, max_nodes=1000, num_classes=1, num_features=13,
-        regression=True)
+    hparams = tensor_forest.ForestHParams(
+        num_trees=3,
+        max_nodes=1000,
+        num_classes=1,
+        num_features=13,
+        regression=True,
+        split_after_samples=20)
 
-    regressor = tf.contrib.learn.TensorForestEstimator(hparams)
+    regressor = random_forest.TensorForestEstimator(hparams.fill())
 
-    boston = tf.contrib.learn.datasets.load_boston()
+    boston = base.load_boston()
     data = boston.data.astype(np.float32)
-    target = boston.target.astype(np.float32)
+    labels = boston.target.astype(np.float32)
 
-    monitors = [tf.contrib.learn.TensorForestLossMonitor(10, 10)]
-    regressor.fit(x=data, y=target, steps=100, monitors=monitors)
-    regressor.evaluate(x=data, y=target, steps=10)
+    regressor.fit(x=data, y=labels, steps=100, batch_size=50)
+    regressor.evaluate(x=data, y=labels, steps=10)
 
 
-if __name__ == '__main__':
-  tf.test.main()
+if __name__ == "__main__":
+  test.main()

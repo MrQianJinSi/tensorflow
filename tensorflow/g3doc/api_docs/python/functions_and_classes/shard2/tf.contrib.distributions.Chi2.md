@@ -111,6 +111,29 @@ cdf(x) := P[X <= x]
 
 - - -
 
+#### `tf.contrib.distributions.Chi2.copy(**override_parameters_kwargs)` {#Chi2.copy}
+
+Creates a deep copy of the distribution.
+
+Note: the copy distribution may continue to depend on the original
+intialization arguments.
+
+##### Args:
+
+
+*  <b>`**override_parameters_kwargs`</b>: String/value dictionary of initialization
+    arguments to override with new values.
+
+##### Returns:
+
+
+*  <b>`distribution`</b>: A new instance of `type(self)` intitialized from the union
+    of self.parameters and override_parameters_kwargs, i.e.,
+    `dict(self.parameters, **override_parameters_kwargs)`.
+
+
+- - -
+
 #### `tf.contrib.distributions.Chi2.df` {#Chi2.df}
 
 
@@ -198,6 +221,20 @@ Same meaning as `event_shape`. May be only partially defined.
 #### `tf.contrib.distributions.Chi2.is_reparameterized` {#Chi2.is_reparameterized}
 
 
+
+
+- - -
+
+#### `tf.contrib.distributions.Chi2.is_scalar_batch` {#Chi2.is_scalar_batch}
+
+Indicates that `batch_shape==[]`.
+
+
+- - -
+
+#### `tf.contrib.distributions.Chi2.is_scalar_event` {#Chi2.is_scalar_event}
+
+Indicates that `event_shape==[]`.
 
 
 - - -

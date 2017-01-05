@@ -157,6 +157,29 @@ Boolean indicating if `Tensor` input/outputs are Cholesky factorized.
 
 - - -
 
+#### `tf.contrib.distributions.WishartFull.copy(**override_parameters_kwargs)` {#WishartFull.copy}
+
+Creates a deep copy of the distribution.
+
+Note: the copy distribution may continue to depend on the original
+intialization arguments.
+
+##### Args:
+
+
+*  <b>`**override_parameters_kwargs`</b>: String/value dictionary of initialization
+    arguments to override with new values.
+
+##### Returns:
+
+
+*  <b>`distribution`</b>: A new instance of `type(self)` intitialized from the union
+    of self.parameters and override_parameters_kwargs, i.e.,
+    `dict(self.parameters, **override_parameters_kwargs)`.
+
+
+- - -
+
 #### `tf.contrib.distributions.WishartFull.df` {#WishartFull.df}
 
 Wishart distribution degree(s) of freedom.
@@ -240,6 +263,20 @@ Same meaning as `event_shape`. May be only partially defined.
 #### `tf.contrib.distributions.WishartFull.is_reparameterized` {#WishartFull.is_reparameterized}
 
 
+
+
+- - -
+
+#### `tf.contrib.distributions.WishartFull.is_scalar_batch` {#WishartFull.is_scalar_batch}
+
+Indicates that `batch_shape==[]`.
+
+
+- - -
+
+#### `tf.contrib.distributions.WishartFull.is_scalar_event` {#WishartFull.is_scalar_event}
+
+Indicates that `event_shape==[]`.
 
 
 - - -
